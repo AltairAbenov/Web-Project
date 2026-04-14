@@ -1,1 +1,91 @@
-<p>category-list works!</p>
+<div class="categories-page">
+  <div class="page-header">
+    <h1>Categories</h1>
+    <button class="btn btn-primary" (click)="openAdd()">+ Add</button>
+  </div>
+
+  <!-- Income Categories -->
+  <div class="cat-section">
+    <h2 class="section-title income">📈 Income</h2>
+    <div class="cat-grid">
+      @for (c of incomeCategories; track c.id) {
+        <div class="card cat-card">
+          <div class="cat-card-left">
+            <span class="cat-badge" [style.background]="c.color + '22'" [style.color]="c.color">{{ c.icon }}</span>
+            <span class="cat-name">{{ c.name }}</span>
+          </div>
+          <button class="btn btn-danger btn-sm" (click)="deleteCategory(c.id)">✕</button>
+        </div>
+      } @empty {
+        <div class="card empty-state"><p>No income categories</p></div>
+      }
+    </div>
+  </div>
+
+  <!-- Expense Categories -->
+  <div class="cat-section">
+    <h2 class="section-title expense">📉 Expenses</h2>
+    <div class="cat-grid">
+      @for (c of expenseCategories; track c.id) {
+        <div class="card cat-card">
+          <div class="cat-card-left">
+            <span class="cat-badge" [style.background]="c.color + '22'" [style.color]="c.color">{{ c.icon }}</span>
+            <span class="cat-name">{{ c.name }}</span>
+          </div>
+          <button class="btn btn-danger btn-sm" (click)="deleteCategory(c.id)">✕</button>
+        </div>
+      } @empty {
+        <div class="card empty-state"><p>No expenses categories</p></div>
+      }
+    </div>
+  </div>
+</div>
+
+@if (showForm()) {
+  <div class="modal-overlay" (click)="showForm.set(false)">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <h2>New category</h2>
+
+      <div class="form-group">
+        <label>Name</label>
+        <input type="text" [(ngModel)]="formName" placeholder="Category name" />
+      </div>
+
+      <div class="form-group">
+        <label>Type</label>
+        <div class="type-toggle">
+          <button [class.active]="formType === 'expense'" [class.expense-active]="formType === 'expense'" (click)="formType = 'expense'">Expense</button>
+          <button [class.active]="formType === 'income'" [class.income-active]="formType === 'income'" (click)="formType = 'income'">Income</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Icon</label>
+        <div class="icon-grid">
+          @for (icon of icons; track icon) {
+            <button class="icon-btn" [class.selected]="formIcon === icon" (click)="formIcon = icon">{{ icon }}</button>
+          }
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Color</label>
+        <div class="color-grid">
+          @for (color of colors; track color) {
+            <button class="color-btn" [style.background]="color" [class.selected]="formColor === color" (click)="formColor = color"></button>
+          }
+        </div>
+      </div>
+
+      <div class="preview">
+        <span class="cat-badge" [style.background]="formColor + '22'" [style.color]="formColor">{{ formIcon }}</span>
+        <span>{{ formName || 'Name' }}</span>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn btn-secondary" (click)="showForm.set(false)">Cancel</button>
+        <button class="btn btn-primary" (click)="save()">Create</button>
+      </div>
+    </div>
+  </div>
+}
