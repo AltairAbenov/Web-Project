@@ -10,7 +10,7 @@ import {
   PlatformNavigation,
   Title,
   ViewportScroller
-} from "./chunk-5NCBJT6C.js";
+} from "./chunk-I2YWAZBD.js";
 import {
   APP_BOOTSTRAP_LISTENER,
   ApplicationRef,
@@ -117,7 +117,7 @@ import {
   ɵɵloadQuery,
   ɵɵqueryRefresh,
   ɵɵsanitizeUrlOrResourceUrl
-} from "./chunk-YEPWIHIR.js";
+} from "./chunk-6DZXHIM3.js";
 
 // node_modules/@angular/router/fesm2022/_router-chunk.mjs
 var PRIMARY_OUTLET = "primary";
