@@ -1,1 +1,101 @@
-<p>dashboard-page works!</p>
+<div class="dashboard">
+  <div class="page-header">
+    <h1>Dashboard</h1>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="summary-grid">
+    <div class="summary-card income-card">
+      <div class="summary-icon">📈</div>
+      <div class="summary-info">
+        <span class="summary-label">Income</span>
+        <span class="summary-value income">{{ formatAmount(txnService.totalIncome()) }}</span>
+      </div>
+    </div>
+    <div class="summary-card expense-card">
+      <div class="summary-icon">📉</div>
+      <div class="summary-info">
+        <span class="summary-label">Expenses</span>
+        <span class="summary-value expense">{{ formatAmount(txnService.totalExpense()) }}</span>
+      </div>
+    </div>
+    <div class="summary-card balance-card">
+      <div class="summary-icon">💰</div>
+      <div class="summary-info">
+        <span class="summary-label">Balance</span>
+        <span class="summary-value" [class.income]="txnService.balance() >= 0" [class.expense]="txnService.balance() < 0">
+          {{ formatAmount(txnService.balance()) }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Row -->
+  <div class="charts-row">
+    <div class="card chart-card">
+      <h3>Income and expenses for 6 months</h3>
+      <div class="chart-legend">
+        <span class="legend-item"><span class="legend-dot income-dot"></span> Income</span>
+        <span class="legend-item"><span class="legend-dot expense-dot"></span> Expenses</span>
+      </div>
+      <canvas #barChart class="chart-canvas"></canvas>
+    </div>
+    <div class="card chart-card">
+      <h3>Categorized expenses</h3>
+      <canvas #pieChart class="chart-canvas"></canvas>
+    </div>
+  </div>
+
+  <!-- Bottom Row -->
+  <div class="bottom-row">
+    <!-- Recent Transactions -->
+    <div class="card">
+      <div class="card-header">
+        <h3>Recent transactions</h3>
+        <a routerLink="/transactions" class="view-all">All →</a>
+      </div>
+      @for (t of recentTransactions(); track t.id) {
+        <div class="txn-row">
+          <div class="txn-left">
+            <span class="txn-icon" [style.background]="t.category_color + '22'" [style.color]="t.category_color">{{ t.category_icon }}</span>
+            <div>
+              <div class="txn-desc">{{ t.description }}</div>
+              <div class="txn-cat">{{ t.category_name }} · {{ t.date }}</div>
+            </div>
+          </div>
+          <span class="txn-amount" [class.income]="t.type === 'income'" [class.expense]="t.type === 'expense'">
+            {{ t.type === 'income' ? '+' : '-' }}{{ formatAmount(t.amount) }}
+          </span>
+        </div>
+      } @empty {
+        <div class="empty-state"><p>No transactions</p></div>
+      }
+    </div>
+
+    <!-- Budgets -->
+    <div class="card">
+      <div class="card-header">
+        <h3>Budgets for month</h3>
+        <a routerLink="/budgets" class="view-all">All →</a>
+      </div>
+      @for (b of budgets(); track b.id) {
+        <div class="budget-row">
+          <div class="budget-info">
+            <span class="budget-name">{{ b.category_name }}</span>
+            <span class="budget-amounts">{{ formatAmount(b.spent) }} / {{ formatAmount(b.amount) }}</span>
+          </div>
+          <div class="progress-bar">
+            <div
+              class="progress-fill"
+              [style.width.%]="budgetPercent(b)"
+              [class.warning]="budgetPercent(b) > 75"
+              [class.danger]="budgetPercent(b) > 90"
+            ></div>
+          </div>
+        </div>
+      } @empty {
+        <div class="empty-state"><p>No budgets</p></div>
+      }
+    </div>
+  </div>
+</div>

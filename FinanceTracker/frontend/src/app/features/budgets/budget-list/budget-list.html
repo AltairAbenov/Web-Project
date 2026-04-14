@@ -1,1 +1,80 @@
-<p>budget-list works!</p>
+<div class="budgets-page">
+  <div class="page-header">
+    <h1>Budgets</h1>
+    <button class="btn btn-primary" (click)="openAdd()">+ New budget</button>
+  </div>
+
+  <!-- Summary -->
+  <div class="budget-summary card">
+    <div class="budget-summary-item">
+      <span class="label">Total budget</span>
+      <span class="value">{{ formatAmount(totalBudget()) }}</span>
+    </div>
+    <div class="divider"></div>
+    <div class="budget-summary-item">
+      <span class="label">Spent</span>
+      <span class="value expense">{{ formatAmount(totalSpent()) }}</span>
+    </div>
+    <div class="divider"></div>
+    <div class="budget-summary-item">
+      <span class="label">Left</span>
+      <span class="value income">{{ formatAmount(totalBudget() - totalSpent()) }}</span>
+    </div>
+  </div>
+
+  <!-- Budget Cards -->
+  <div class="budget-grid">
+    @for (b of budgets(); track b.id) {
+      <div class="card budget-card">
+        <div class="budget-card-header">
+          <div class="budget-card-info">
+            <h3>{{ b.category_name }}</h3>
+            <span class="budget-pct" [class]="statusClass(b)">{{ percent(b) }}%</span>
+          </div>
+          <button class="btn btn-danger btn-sm" (click)="deleteBudget(b.id)">🗑️</button>
+        </div>
+        <div class="budget-amounts">
+          <span>{{ formatAmount(b.spent) }}</span>
+          <span class="muted">From {{ formatAmount(b.amount) }}</span>
+        </div>
+        <div class="progress-bar-lg">
+          <div
+            class="progress-fill-lg"
+            [style.width.%]="percent(b)"
+            [class]="statusClass(b)"
+          ></div>
+        </div>
+        @if (percent(b) > 90) {
+          <div class="budget-warning">⚠️ Budget almost gone!</div>
+        }
+      </div>
+    } @empty {
+      <div class="card empty-state"><div class="icon">🎯</div><p>No budgets for this month</p></div>
+    }
+  </div>
+</div>
+
+@if (showForm()) {
+  <div class="modal-overlay" (click)="showForm.set(false)">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <h2>New Budget</h2>
+      <div class="form-group">
+        <label>Expense category</label>
+        <select [(ngModel)]="formCategoryId">
+          <option [value]="0" disabled>Choose category</option>
+          @for (c of expenseCategories; track c.id) {
+            <option [value]="c.id">{{ c.icon }} {{ c.name }}</option>
+          }
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Limit (₸)</label>
+        <input type="number" [(ngModel)]="formAmount" placeholder="Budget amount" />
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" (click)="showForm.set(false)">Cancel</button>
+        <button class="btn btn-primary" (click)="save()">Create</button>
+      </div>
+    </div>
+  </div>
+}

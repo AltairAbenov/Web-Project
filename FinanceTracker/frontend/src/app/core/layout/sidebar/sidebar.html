@@ -1,1 +1,23 @@
-<p>sidebar works!</p>
+<aside class="sidebar" [class.collapsed]="collapsed()">
+  <button class="toggle-btn" (click)="toggle()">
+    @if (collapsed()) {
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+    } @else {
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+    }
+  </button>
+  <nav class="sidebar-nav">
+    @for (item of navItems; track item.route) {
+      <a
+        class="nav-item"
+        [routerLink]="item.route"
+        routerLinkActive="active"
+      >
+        <span class="nav-icon">{{ item.icon }}</span>
+        @if (!collapsed()) {
+          <span class="nav-label">{{ item.label }}</span>
+        }
+      </a>
+    }
+  </nav>
+</aside>

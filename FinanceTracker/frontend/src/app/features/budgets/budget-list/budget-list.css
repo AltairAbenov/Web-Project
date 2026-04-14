@@ -1,0 +1,77 @@
+.budgets-page { max-width: 1000px; }
+
+.budget-summary {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 24px;
+  padding: 20px 28px;
+}
+
+.budget-summary-item { text-align: center; flex: 1; }
+.budget-summary-item .label { display: block; font-size: 13px; color: var(--text-secondary); margin-bottom: 4px; }
+.budget-summary-item .value { font-size: 22px; font-weight: 700; }
+.budget-summary-item .value.income { color: var(--green); }
+.budget-summary-item .value.expense { color: var(--red); }
+.divider { width: 1px; height: 48px; background: var(--border); }
+
+.budget-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.budget-card { padding: 20px; }
+
+.budget-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.budget-card-info { display: flex; align-items: center; gap: 10px; }
+.budget-card-info h3 { font-size: 16px; font-weight: 600; }
+
+.budget-pct {
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.budget-pct.normal { background: var(--accent-light); color: var(--accent); }
+.budget-pct.warning { background: var(--orange-light); color: var(--orange); }
+.budget-pct.danger { background: var(--red-light); color: var(--red); }
+
+.budget-amounts {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.muted { color: var(--text-muted); }
+
+.progress-bar-lg {
+  height: 10px;
+  background: var(--bg-hover);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.progress-fill-lg {
+  height: 100%;
+  border-radius: 5px;
+  transition: width 0.3s ease;
+}
+
+.progress-fill-lg.normal { background: var(--accent); }
+.progress-fill-lg.warning { background: var(--orange); }
+.progress-fill-lg.danger { background: var(--red); }
+
+.budget-warning {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--red);
+}

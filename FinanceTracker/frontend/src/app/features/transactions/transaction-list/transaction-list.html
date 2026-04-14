@@ -1,1 +1,105 @@
-<p>transaction-list works!</p>
+<div class="transactions-page">
+  <div class="page-header">
+    <h1>Transactions</h1>
+    <button class="btn btn-primary" (click)="openAdd()">+ Add</button>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters card">
+    <div class="filter-tabs">
+      <button class="tab" [class.active]="filterType() === 'all'" (click)="setFilter('all')">All</button>
+      <button class="tab" [class.active]="filterType() === 'income'" (click)="setFilter('income')">Income</button>
+      <button class="tab" [class.active]="filterType() === 'expense'" (click)="setFilter('expense')">Expenses</button>
+    </div>
+    <input type="text" placeholder="Searching by description or category..." [ngModel]="searchQuery()" (ngModelChange)="setSearch($event)" class="search-input" />
+  </div>
+
+  <!-- Table -->
+  <div class="card table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th>Description</th>
+          <th>Date</th>
+          <th>Amount</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (t of filteredTransactions(); track t.id) {
+          <tr>
+            <td>
+              <div class="cat-cell">
+                <span class="cat-icon" [style.background]="t.category_color + '22'">{{ t.category_icon }}</span>
+                <span>{{ t.category_name }}</span>
+              </div>
+            </td>
+            <td>{{ t.description }}</td>
+            <td class="date-cell">{{ t.date }}</td>
+            <td>
+              <span [class.income]="t.type === 'income'" [class.expense]="t.type === 'expense'" class="amount-cell">
+                {{ t.type === 'income' ? '+' : '-' }}{{ formatAmount(t.amount) }}
+              </span>
+            </td>
+            <td>
+              <div class="actions">
+                <button class="btn btn-secondary btn-sm" (click)="openEdit(t)">✏️</button>
+                <button class="btn btn-danger btn-sm" (click)="deleteTxn(t.id)">🗑️</button>
+              </div>
+            </td>
+          </tr>
+        } @empty {
+          <tr><td colspan="5"><div class="empty-state"><div class="icon">💸</div><p>No transactions</p></div></td></tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal -->
+@if (showForm()) {
+  <div class="modal-overlay" (click)="closeForm()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <h2>{{ editingTxn() ? 'Edit' : 'New transaction' }}</h2>
+
+      <div class="form-group">
+        <label>Type</label>
+        <div class="type-toggle">
+          <button [class.active]="formType === 'expense'" [class.expense-btn]="formType === 'expense'" (click)="formType = 'expense'; formCategoryId = 0">Expense</button>
+          <button [class.active]="formType === 'income'" [class.income-btn]="formType === 'income'" (click)="formType = 'income'; formCategoryId = 0">Income</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Amount (₸)</label>
+        <input type="number" [(ngModel)]="formAmount" placeholder="0" />
+      </div>
+
+      <div class="form-group">
+        <label>Category</label>
+        <select [(ngModel)]="formCategoryId">
+          <option [value]="0" disabled>Choose category</option>
+          @for (c of formCategories; track c.id) {
+            <option [value]="c.id">{{ c.icon }} {{ c.name }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Description</label>
+        <input type="text" [(ngModel)]="formDescription" placeholder="Transaction description" />
+      </div>
+
+      <div class="form-group">
+        <label>Date</label>
+        <input type="date" [(ngModel)]="formDate" />
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn btn-secondary" (click)="closeForm()">Cancel</button>
+        <button class="btn btn-primary" (click)="saveTransaction()">{{ editingTxn() ? 'Save' : 'Add' }}</button>
+      </div>
+    </div>
+  </div>
+}

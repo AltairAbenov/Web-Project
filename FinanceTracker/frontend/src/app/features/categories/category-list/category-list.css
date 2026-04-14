@@ -1,0 +1,102 @@
+.categories-page { max-width: 900px; }
+
+.cat-section { margin-bottom: 32px; }
+
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.section-title.income { color: var(--green); }
+.section-title.expense { color: var(--red); }
+
+.cat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.cat-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+}
+
+.cat-card-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cat-badge {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.cat-name { font-size: 14px; font-weight: 500; }
+
+.type-toggle { display: flex; gap: 8px; }
+.type-toggle button {
+  flex: 1;
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+  background: var(--bg-hover);
+  color: var(--text-secondary);
+  font-size: 14px;
+  transition: all var(--transition);
+}
+.type-toggle .expense-active { background: var(--red-light); color: var(--red); }
+.type-toggle .income-active { background: var(--green-light); color: var(--green); }
+
+.icon-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.icon-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-hover);
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition);
+}
+
+.icon-btn:hover { background: var(--border); }
+.icon-btn.selected { background: var(--accent-light); box-shadow: 0 0 0 2px var(--accent); }
+
+.color-grid { display: flex; gap: 6px; flex-wrap: wrap; }
+
+.color-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  transition: all var(--transition);
+}
+
+.color-btn:hover { transform: scale(1.15); }
+.color-btn.selected { border-color: white; box-shadow: 0 0 0 2px var(--accent); }
+
+.preview {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  background: var(--bg-primary);
+  border-radius: var(--radius-sm);
+  margin-top: 16px;
+  font-weight: 500;
+}
