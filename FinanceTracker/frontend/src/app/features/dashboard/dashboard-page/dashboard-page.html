@@ -52,7 +52,7 @@
     <div class="card">
       <div class="card-header">
         <h3>Recent transactions</h3>
-        <a routerLink="/transactions" class="view-all">Все →</a>
+        <a routerLink="/transactions" class="view-all">All →</a>
       </div>
       @for (t of recentTransactions(); track t.id) {
         <div class="txn-row">
@@ -76,7 +76,7 @@
     <div class="card">
       <div class="card-header">
         <h3>Budgets for month</h3>
-        <a routerLink="/budgets" class="view-all">Все →</a>
+        <a routerLink="/budgets" class="view-all">All →</a>
       </div>
       @for (b of budgets(); track b.id) {
         <div class="budget-row">
