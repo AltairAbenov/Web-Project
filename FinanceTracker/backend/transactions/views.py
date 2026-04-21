@@ -10,7 +10,17 @@ class TransactionViewSet(viewsets.ModelViewSet):
     filterset_fields = ['type']
 
     def get_queryset(self):
-        return Transaction.objects.filter(user=self.request.user)
+        return Transaction.objects.filter(user=self.request.user).select_related('category')
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        instance = serializer.save()
+       
+        instance = Transaction.objects.select_related('category').get(pk=instance.pk)
+        from rest_framework.response import Response
+        from rest_framework import status
+        return Response(self.get_serializer(instance).data, status=status.HTTP_201_CREATED)
 
 class CategoryViewSet(viewsets.ModelViewSet):
     serializer_class = CategorySerializer
