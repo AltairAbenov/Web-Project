@@ -17,5 +17,8 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Category.objects.filter(
-            m.Q(user=self.request.user) | m.Q(is_default=True)
+            m.Q(user=self.request.user)
         )
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
