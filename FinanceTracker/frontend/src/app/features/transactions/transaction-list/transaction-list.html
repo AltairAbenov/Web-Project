@@ -4,6 +4,7 @@
     <button class="btn btn-primary" (click)="openAdd()">+ Add</button>
   </div>
 
+
   <div class="filters card">
     <div class="filter-tabs">
       <button class="tab" [class.active]="filterType() === 'all'" (click)="setFilter('all')">All</button>
@@ -13,14 +14,15 @@
     <input type="text" placeholder="Searching by description or category..." [ngModel]="searchQuery()" (ngModelChange)="setSearch($event)" class="search-input" />
   </div>
 
+
   <div class="card table-wrap">
     <table>
       <thead>
         <tr>
           <th>Category</th>
           <th>Description</th>
-          <th>Date</th>
-          <th>Amount</th>
+          <th class="sortable-th" (click)="toggleSort('date')">Date{{ getSortIndicator('date') }}</th>
+          <th class="sortable-th" (click)="toggleSort('amount')">Amount{{ getSortIndicator('amount') }}</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -29,7 +31,7 @@
           <tr>
             <td>
               <div class="cat-cell">
-                <span class="cat-icon" [style.background]="t.category_color + '22'">{{ t.category_icon }}</span>
+                <span class="cat-icon" [style.background]="t.category_color + '22'" [style.color]="t.category_color" [innerHTML]="getIconSvg(t.category_icon) | safeHtml"></span>
                 <span>{{ t.category_name }}</span>
               </div>
             </td>
@@ -42,13 +44,13 @@
             </td>
             <td>
               <div class="actions">
-                <button class="btn btn-secondary btn-sm" (click)="openEdit(t)">✏️</button>
-                <button class="btn btn-danger btn-sm" (click)="deleteTxn(t.id)">🗑️</button>
+                <button class="btn btn-secondary btn-sm icon-action-btn" [innerHTML]="iconEdit | safeHtml" (click)="openEdit(t)"></button>
+                <button class="btn btn-danger btn-sm icon-action-btn" [innerHTML]="iconTrash | safeHtml" (click)="deleteTxn(t.id)"></button>
               </div>
             </td>
           </tr>
         } @empty {
-          <tr><td colspan="5"><div class="empty-state"><div class="icon">💸</div><p>No transactions</p></div></td></tr>
+          <tr><td colspan="5"><div class="empty-state"><p>No transactions</p></div></td></tr>
         }
       </tbody>
     </table>
@@ -79,7 +81,7 @@
         <select [(ngModel)]="formCategoryId">
           <option [value]="0" disabled>Choose category</option>
           @for (c of formCategories; track c.id) {
-            <option [value]="c.id">{{ c.icon }} {{ c.name }}</option>
+            <option [value]="c.id">{{ c.name }}</option>
           }
         </select>
       </div>

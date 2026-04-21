@@ -81,3 +81,20 @@
   .filters { flex-direction: column; align-items: stretch; }
   .search-input { max-width: 100%; }
 }
+
+.sortable-th {
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.2s;
+}
+
+.sortable-th:hover {
+  color: var(--accent);
+}
+
+.icon-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 8px;
+}

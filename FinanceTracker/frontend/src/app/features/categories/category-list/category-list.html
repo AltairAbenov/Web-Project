@@ -4,14 +4,14 @@
     <button class="btn btn-primary" (click)="openAdd()">+ Add</button>
   </div>
 
-  <!-- Income Categories -->
+
   <div class="cat-section">
-    <h2 class="section-title income">📈 Income</h2>
+    <h2 class="section-title income"><span class="section-icon" [innerHTML]="iconIncomeHeader | safeHtml"></span> Income</h2>
     <div class="cat-grid">
       @for (c of incomeCategories; track c.id) {
         <div class="card cat-card">
           <div class="cat-card-left">
-            <span class="cat-badge" [style.background]="c.color + '22'" [style.color]="c.color">{{ c.icon }}</span>
+            <span class="cat-badge" [style.background]="c.color + '22'" [style.color]="c.color" [innerHTML]="getIconSvg(c.icon) | safeHtml"></span>
             <span class="cat-name">{{ c.name }}</span>
           </div>
           <button class="btn btn-danger btn-sm" (click)="deleteCategory(c.id)">✕</button>
@@ -22,20 +22,19 @@
     </div>
   </div>
 
-  <!-- Expense Categories -->
   <div class="cat-section">
-    <h2 class="section-title expense">📉 Expenses</h2>
+    <h2 class="section-title expense"><span class="section-icon" [innerHTML]="iconExpenseHeader | safeHtml"></span> Expenses</h2>
     <div class="cat-grid">
       @for (c of expenseCategories; track c.id) {
         <div class="card cat-card">
           <div class="cat-card-left">
-            <span class="cat-badge" [style.background]="c.color + '22'" [style.color]="c.color">{{ c.icon }}</span>
+            <span class="cat-badge" [style.background]="c.color + '22'" [style.color]="c.color" [innerHTML]="getIconSvg(c.icon) | safeHtml"></span>
             <span class="cat-name">{{ c.name }}</span>
           </div>
           <button class="btn btn-danger btn-sm" (click)="deleteCategory(c.id)">✕</button>
         </div>
       } @empty {
-        <div class="card empty-state"><p>No expenses categories</p></div>
+        <div class="card empty-state"><p>No expense categories</p></div>
       }
     </div>
   </div>
@@ -62,8 +61,8 @@
       <div class="form-group">
         <label>Icon</label>
         <div class="icon-grid">
-          @for (icon of icons; track icon) {
-            <button class="icon-btn" [class.selected]="formIcon === icon" (click)="formIcon = icon">{{ icon }}</button>
+          @for (key of iconKeys; track key) {
+            <button class="icon-btn" [class.selected]="formIcon === key" (click)="formIcon = key" [innerHTML]="getIconSized(key, 18) | safeHtml"></button>
           }
         </div>
       </div>
@@ -78,7 +77,7 @@
       </div>
 
       <div class="preview">
-        <span class="cat-badge" [style.background]="formColor + '22'" [style.color]="formColor">{{ formIcon }}</span>
+        <span class="cat-badge" [style.background]="formColor + '22'" [style.color]="formColor" [innerHTML]="getIconSvg(formIcon) | safeHtml"></span>
         <span>{{ formName || 'Name' }}</span>
       </div>
 

@@ -1,15 +1,17 @@
 import { Component, signal, effect } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { ICONS } from '../../icons/icons';
+import { SafeHtmlPipe } from '../../pipes/safe-html.pipe';
 
 interface NavItem {
   label: string;
   route: string;
-  icon: string;
+  iconSvg: string;
 }
 
 @Component({
   selector: 'app-sidebar',
-  imports: [RouterLink, RouterLinkActive],
+  imports: [RouterLink, RouterLinkActive, SafeHtmlPipe],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.css',
 })
@@ -17,10 +19,10 @@ export class Sidebar {
   collapsed = signal(false);
 
   navItems: NavItem[] = [
-    { label: 'Dashboard', route: '/dashboard', icon: '📊' },
-    { label: 'Transactions', route: '/transactions', icon: '💸' },
-    { label: 'Budgets', route: '/budgets', icon: '🎯' },
-    { label: 'Categories', route: '/categories', icon: '🏷️' },
+    { label: 'Dashboard', route: '/dashboard', iconSvg: ICONS.dashboard },
+    { label: 'Transactions', route: '/transactions', iconSvg: ICONS.transactions },
+    { label: 'Budgets', route: '/budgets', iconSvg: ICONS.budgets },
+    { label: 'Categories', route: '/categories', iconSvg: ICONS.categories },
   ];
 
   constructor() {

@@ -1,7 +1,7 @@
 <div class="auth-page">
   <div class="auth-card">
     <div class="auth-header">
-      <span class="auth-logo">💳</span>
+      <span class="auth-logo" [innerHTML]="iconWallet | safeHtml"></span>
       <h1>FinanceTracker</h1>
       <p>Log in</p>
     </div>
@@ -35,7 +35,7 @@
     <button class="btn btn-primary btn-full" (click)="submit()">Log in</button>
 
     <p class="auth-footer">
-      Нет аккаунта? <a routerLink="/register">Register</a>
+      Don't have an account? <a routerLink="/register">Register</a>
     </p>
 
     <p class="demo-hint">Demo-login: Login <strong>demo</strong>, any password</p>

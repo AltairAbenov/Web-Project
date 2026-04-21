@@ -1,13 +1,16 @@
-import { Component, computed, signal, OnInit, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
-import { CommonModule, CurrencyPipe } from '@angular/common';
+import { Component, computed, signal, ElementRef, ViewChild, AfterViewInit, effect } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { TransactionService } from '../../../core/services/transaction';
 import { BudgetService } from '../../../core/services/budget';
 import { AnalyticsService, MonthlyData } from '../../../core/services/analytics';
+import { getIcon, ICONS } from '../../../core/icons/icons';
+import { SafeHtmlPipe } from '../../../core/pipes/safe-html.pipe';
 
 @Component({
   selector: 'app-dashboard-page',
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, FormsModule, SafeHtmlPipe],
   templateUrl: './dashboard-page.html',
   styleUrl: './dashboard-page.css',
 })
@@ -15,19 +18,38 @@ export class DashboardPage implements AfterViewInit {
   @ViewChild('barChart') barChartEl!: ElementRef<HTMLCanvasElement>;
   @ViewChild('pieChart') pieChartEl!: ElementRef<HTMLCanvasElement>;
 
+  selectedPeriod = signal(6);
+  periodOptions = [3, 6, 9, 12];
+
+  iconTrendUp = ICONS.trendUp;
+  iconTrendDown = ICONS.trendDown;
+  iconCoins = ICONS.coins;
+
   constructor(
     public txnService: TransactionService,
     public budgetService: BudgetService,
     public analytics: AnalyticsService,
-  ) {}
+  ) {
+    effect(() => {
+      this.selectedPeriod();
+      setTimeout(() => {
+        this.drawBarChart();
+        this.drawPieChart();
+      }, 50);
+    });
+  }
 
   recentTransactions = computed(() => this.txnService.getWithCategory().slice(0, 5));
   budgets = computed(() => this.budgetService.getCurrentMonth());
-  monthlyData = computed(() => this.analytics.getLast6Months());
+  monthlyData = computed(() => this.analytics.getLastNMonths(this.selectedPeriod()));
   expenseByCategory = computed(() => {
     const now = new Date();
     return this.txnService.getExpenseByCategory(now.getFullYear(), now.getMonth());
   });
+
+  getIconSvg(key: string): string {
+    return getIcon(key);
+  }
 
   formatAmount(amount: number): string {
     return new Intl.NumberFormat('ru-RU').format(amount) + ' ₸';
@@ -36,6 +58,10 @@ export class DashboardPage implements AfterViewInit {
   budgetPercent(b: any): number {
     if (!b.amount) return 0;
     return Math.min(100, Math.round((b.spent / b.amount) * 100));
+  }
+
+  setPeriod(n: number): void {
+    this.selectedPeriod.set(n);
   }
 
   ngAfterViewInit(): void {
@@ -54,6 +80,7 @@ export class DashboardPage implements AfterViewInit {
     const data = this.monthlyData();
     const W = canvas.width = canvas.offsetWidth * 2;
     const H = canvas.height = canvas.offsetHeight * 2;
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.scale(2, 2);
     const w = W / 2, h = H / 2;
     const pad = { top: 20, right: 20, bottom: 40, left: 20 };
@@ -62,37 +89,6 @@ export class DashboardPage implements AfterViewInit {
     const maxVal = Math.max(...data.map(d => Math.max(d.income, d.expense)), 1);
 
     ctx.clearRect(0, 0, w, h);
-
-    const barGroupW = chartW / data.length;
-    const barW = barGroupW * 0.3;
-    const gap = barGroupW * 0.1;
-
-    data.forEach((d, i) => {
-      const x = pad.left + i * barGroupW;
-      const incomeH = (d.income / maxVal) * chartH;
-      const expenseH = (d.expense / maxVal) * chartH;
-
-
-      ctx.fillStyle = '#22c55e';
-      ctx.beginPath();
-      const ix = x + gap;
-      const iy = pad.top + chartH - incomeH;
-      roundRect(ctx, ix, iy, barW, incomeH, 4);
-      ctx.fill();
-
-
-      ctx.fillStyle = '#ef4444';
-      ctx.beginPath();
-      const ex = x + gap + barW + 4;
-      const ey = pad.top + chartH - expenseH;
-      roundRect(ctx, ex, ey, barW, expenseH, 4);
-      ctx.fill();
-
-      ctx.fillStyle = '#94a3b8';
-      ctx.font = '11px Inter, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText(d.label, x + barGroupW / 2, h - pad.bottom + 20);
-    });
 
     ctx.strokeStyle = '#334155';
     ctx.lineWidth = 0.5;
@@ -103,6 +99,31 @@ export class DashboardPage implements AfterViewInit {
       ctx.lineTo(w - pad.right, y);
       ctx.stroke();
     }
+
+    const barGroupW = chartW / data.length;
+    const barW = barGroupW * 0.3;
+    const gap = barGroupW * 0.1;
+
+    data.forEach((d, i) => {
+      const x = pad.left + i * barGroupW;
+      const incomeH = (d.income / maxVal) * chartH;
+      const expenseH = (d.expense / maxVal) * chartH;
+
+      ctx.fillStyle = '#22c55e';
+      ctx.beginPath();
+      roundRect(ctx, x + gap, pad.top + chartH - incomeH, barW, incomeH, 4);
+      ctx.fill();
+
+      ctx.fillStyle = '#ef4444';
+      ctx.beginPath();
+      roundRect(ctx, x + gap + barW + 4, pad.top + chartH - expenseH, barW, expenseH, 4);
+      ctx.fill();
+
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '11px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(d.label, x + barGroupW / 2, h - pad.bottom + 20);
+    });
   }
 
   drawPieChart(): void {
@@ -114,6 +135,7 @@ export class DashboardPage implements AfterViewInit {
     const data = this.expenseByCategory();
     const W = canvas.width = canvas.offsetWidth * 2;
     const H = canvas.height = canvas.offsetHeight * 2;
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.scale(2, 2);
     const w = W / 2, h = H / 2;
     const cx = w * 0.35, cy = h / 2;
@@ -139,7 +161,6 @@ export class DashboardPage implements AfterViewInit {
     ctx.fillStyle = '#1e293b';
     ctx.fill();
 
-
     const legendX = w * 0.65;
     let legendY = 20;
     ctx.font = '11px Inter, sans-serif';
@@ -148,10 +169,10 @@ export class DashboardPage implements AfterViewInit {
       ctx.fillRect(legendX, legendY, 10, 10);
       ctx.fillStyle = '#f1f5f9';
       ctx.textAlign = 'left';
-      ctx.fillText(`${d.icon} ${d.name}`, legendX + 16, legendY + 9);
+      ctx.fillText(d.name, legendX + 16, legendY + 9);
       const pct = Math.round((d.total / total) * 100);
       ctx.fillStyle = '#94a3b8';
-      ctx.fillText(`${pct}%`, legendX + 130, legendY + 9);
+      ctx.fillText(`${pct}%`, legendX + 120, legendY + 9);
       legendY += 22;
     });
   }

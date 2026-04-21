@@ -22,8 +22,18 @@
   margin-bottom: 28px;
 }
 
-.auth-logo { font-size: 48px; display: block; margin-bottom: 12px; }
+.auth-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
 
+.auth-logo :deep(svg) {
+  width: 48px;
+  height: 48px;
+}
 .auth-header h1 {
   font-size: 28px;
   font-weight: 700;
