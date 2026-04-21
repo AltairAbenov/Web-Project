@@ -2,6 +2,7 @@ import { Component, computed, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BudgetService } from '../../../core/services/budget';
 import { CategoryService } from '../../../core/services/category';
+import { ICONS } from '../../../core/icons/icons';
 
 @Component({
   selector: 'app-budget-list',
@@ -13,6 +14,9 @@ export class BudgetList {
   showForm = signal(false);
   formCategoryId = 0;
   formAmount = '';
+
+  iconTrash = ICONS.trash;
+  iconAlert = ICONS.alertTriangle;
 
   constructor(public budgetService: BudgetService, public catService: CategoryService) {}
 
@@ -51,7 +55,7 @@ export class BudgetList {
     if (!amount || !this.formCategoryId) return;
     const now = new Date();
     this.budgetService.add({
-      category_id: this.formCategoryId,
+      category_id: Number(this.formCategoryId),
       amount,
       month: now.getMonth(),
       year: now.getFullYear(),

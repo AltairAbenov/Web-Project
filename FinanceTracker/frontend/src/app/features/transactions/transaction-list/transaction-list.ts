@@ -3,6 +3,10 @@ import { FormsModule } from '@angular/forms';
 import { TransactionService } from '../../../core/services/transaction';
 import { CategoryService } from '../../../core/services/category';
 import { Transaction } from '../../../core/models/transaction';
+import { getIcon, ICONS } from '../../../core/icons/icons';
+
+type SortField = 'date' | 'amount';
+type SortDir = 'asc' | 'desc';
 
 @Component({
   selector: 'app-transaction-list',
@@ -16,6 +20,10 @@ export class TransactionList {
   showForm = signal(false);
   editingTxn = signal<Transaction | null>(null);
 
+  // Sorting
+  sortField = signal<SortField>('date');
+  sortDir = signal<SortDir>('desc');
+
   // Form fields
   formAmount = '';
   formType: 'income' | 'expense' = 'expense';
@@ -23,16 +31,40 @@ export class TransactionList {
   formDescription = '';
   formDate = new Date().toISOString().split('T')[0];
 
+  // Icons
+  iconEdit = ICONS.edit;
+  iconTrash = ICONS.trash;
+  iconArrowUpDown = ICONS.arrowUpDown;
+
   constructor(public txnService: TransactionService, public catService: CategoryService) {}
+
+  getIconSvg(key: string): string {
+    return getIcon(key, 16);
+  }
 
   filteredTransactions = computed(() => {
     let txns = this.txnService.getWithCategory();
     const ft = this.filterType();
     const q = this.searchQuery().toLowerCase();
+    const sf = this.sortField();
+    const sd = this.sortDir();
+
     if (ft !== 'all') txns = txns.filter(t => t.type === ft);
     if (q) txns = txns.filter(t =>
       t.description.toLowerCase().includes(q) || t.category_name.toLowerCase().includes(q)
     );
+
+    // Sort
+    txns = [...txns].sort((a, b) => {
+      let cmp = 0;
+      if (sf === 'amount') {
+        cmp = a.amount - b.amount;
+      } else {
+        cmp = a.date.localeCompare(b.date);
+      }
+      return sd === 'asc' ? cmp : -cmp;
+    });
+
     return txns;
   });
 
@@ -42,6 +74,20 @@ export class TransactionList {
 
   setFilter(f: 'all' | 'income' | 'expense') { this.filterType.set(f); }
   setSearch(q: string) { this.searchQuery.set(q); }
+
+  toggleSort(field: SortField): void {
+    if (this.sortField() === field) {
+      this.sortDir.update(d => d === 'asc' ? 'desc' : 'asc');
+    } else {
+      this.sortField.set(field);
+      this.sortDir.set('desc');
+    }
+  }
+
+  getSortIndicator(field: SortField): string {
+    if (this.sortField() !== field) return '';
+    return this.sortDir() === 'asc' ? ' ↑' : ' ↓';
+  }
 
   openAdd(): void {
     this.editingTxn.set(null);
@@ -79,7 +125,7 @@ export class TransactionList {
         ...editing,
         amount,
         type: this.formType,
-        category_id: this.formCategoryId,
+        category_id: Number(this.formCategoryId),
         description: this.formDescription,
         date: this.formDate,
       });
@@ -87,7 +133,7 @@ export class TransactionList {
       this.txnService.add({
         amount,
         type: this.formType,
-        category_id: this.formCategoryId,
+        category_id: Number(this.formCategoryId),
         description: this.formDescription,
         date: this.formDate,
       });

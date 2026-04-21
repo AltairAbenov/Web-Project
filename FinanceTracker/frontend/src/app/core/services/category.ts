@@ -2,18 +2,18 @@ import { Injectable, signal } from '@angular/core';
 import { Category } from '../models/category';
 
 const DEFAULT_CATEGORIES: Category[] = [
-  { id: 1, name: 'Salary', type: 'income', icon: '💰', color: '#22c55e' },
-  { id: 2, name: 'Freelance', type: 'income', icon: '💻', color: '#06b6d4' },
-  { id: 3, name: 'Investments', type: 'income', icon: '📈', color: '#8b5cf6' },
-  { id: 4, name: 'Gifts', type: 'income', icon: '🎁', color: '#f59e0b' },
-  { id: 5, name: 'Products', type: 'expense', icon: '🛒', color: '#ef4444' },
-  { id: 6, name: 'Transport', type: 'expense', icon: '🚗', color: '#f97316' },
-  { id: 7, name: 'Entertainment', type: 'expense', icon: '🎬', color: '#ec4899' },
-  { id: 8, name: 'Utility bills', type: 'expense', icon: '🏠', color: '#64748b' },
-  { id: 9, name: 'Health', type: 'expense', icon: '💊', color: '#14b8a6' },
-  { id: 10, name: 'Clothes', type: 'expense', icon: '👕', color: '#a855f7' },
-  { id: 11, name: 'Education', type: 'expense', icon: '📚', color: '#3b82f6' },
-  { id: 12, name: 'Restaurants', type: 'expense', icon: '🍽️', color: '#e11d48' },
+  { id: 1, name: 'Salary', type: 'income', icon: 'salary', color: '#22c55e' },
+  { id: 2, name: 'Freelance', type: 'income', icon: 'freelance', color: '#06b6d4' },
+  { id: 3, name: 'Investments', type: 'income', icon: 'investments', color: '#8b5cf6' },
+  { id: 4, name: 'Gifts', type: 'income', icon: 'gifts', color: '#f59e0b' },
+  { id: 5, name: 'Products', type: 'expense', icon: 'products', color: '#ef4444' },
+  { id: 6, name: 'Transport', type: 'expense', icon: 'transport', color: '#f97316' },
+  { id: 7, name: 'Entertainment', type: 'expense', icon: 'entertainment', color: '#ec4899' },
+  { id: 8, name: 'Utility bills', type: 'expense', icon: 'utilities', color: '#64748b' },
+  { id: 9, name: 'Health', type: 'expense', icon: 'health', color: '#14b8a6' },
+  { id: 10, name: 'Clothes', type: 'expense', icon: 'clothes', color: '#a855f7' },
+  { id: 11, name: 'Education', type: 'expense', icon: 'education', color: '#3b82f6' },
+  { id: 12, name: 'Restaurants', type: 'expense', icon: 'restaurants', color: '#e11d48' },
 ];
 
 @Injectable({ providedIn: 'root' })

@@ -5,21 +5,21 @@
 
   <div class="summary-grid">
     <div class="summary-card income-card">
-      <div class="summary-icon">📈</div>
+      <div class="summary-icon" [innerHTML]="iconTrendUp"></div>
       <div class="summary-info">
         <span class="summary-label">Income</span>
         <span class="summary-value income">{{ formatAmount(txnService.totalIncome()) }}</span>
       </div>
     </div>
     <div class="summary-card expense-card">
-      <div class="summary-icon">📉</div>
+      <div class="summary-icon" [innerHTML]="iconTrendDown"></div>
       <div class="summary-info">
         <span class="summary-label">Expenses</span>
         <span class="summary-value expense">{{ formatAmount(txnService.totalExpense()) }}</span>
       </div>
     </div>
     <div class="summary-card balance-card">
-      <div class="summary-icon">💰</div>
+      <div class="summary-icon" [innerHTML]="iconCoins"></div>
       <div class="summary-info">
         <span class="summary-label">Balance</span>
         <span class="summary-value" [class.income]="txnService.balance() >= 0" [class.expense]="txnService.balance() < 0">
@@ -29,9 +29,17 @@
     </div>
   </div>
 
+
   <div class="charts-row">
     <div class="card chart-card">
-      <h3>Income and expenses for 6 months</h3>
+      <div class="chart-header">
+        <h3>Income and expenses</h3>
+        <div class="period-selector">
+          @for (p of periodOptions; track p) {
+            <button class="period-btn" [class.active]="selectedPeriod() === p" (click)="setPeriod(p)">{{ p }}m</button>
+          }
+        </div>
+      </div>
       <div class="chart-legend">
         <span class="legend-item"><span class="legend-dot income-dot"></span> Income</span>
         <span class="legend-item"><span class="legend-dot expense-dot"></span> Expenses</span>
@@ -44,6 +52,7 @@
     </div>
   </div>
 
+
   <div class="bottom-row">
     <div class="card">
       <div class="card-header">
@@ -53,7 +62,7 @@
       @for (t of recentTransactions(); track t.id) {
         <div class="txn-row">
           <div class="txn-left">
-            <span class="txn-icon" [style.background]="t.category_color + '22'" [style.color]="t.category_color">{{ t.category_icon }}</span>
+            <span class="txn-icon" [style.background]="t.category_color + '22'" [style.color]="t.category_color" [innerHTML]="getIconSvg(t.category_icon)"></span>
             <div>
               <div class="txn-desc">{{ t.description }}</div>
               <div class="txn-cat">{{ t.category_name }} · {{ t.date }}</div>

@@ -4,7 +4,6 @@
     <button class="btn btn-primary" (click)="openAdd()">+ New budget</button>
   </div>
 
-  <!-- Summary -->
   <div class="budget-summary card">
     <div class="budget-summary-item">
       <span class="label">Total budget</span>
@@ -22,7 +21,6 @@
     </div>
   </div>
 
-  <!-- Budget Cards -->
   <div class="budget-grid">
     @for (b of budgets(); track b.id) {
       <div class="card budget-card">
@@ -31,7 +29,7 @@
             <h3>{{ b.category_name }}</h3>
             <span class="budget-pct" [class]="statusClass(b)">{{ percent(b) }}%</span>
           </div>
-          <button class="btn btn-danger btn-sm" (click)="deleteBudget(b.id)">🗑️</button>
+          <button class="btn btn-danger btn-sm icon-action-btn" [innerHTML]="iconTrash" (click)="deleteBudget(b.id)"></button>
         </div>
         <div class="budget-amounts">
           <span>{{ formatAmount(b.spent) }}</span>
@@ -45,11 +43,14 @@
           ></div>
         </div>
         @if (percent(b) > 90) {
-          <div class="budget-warning">⚠️ Budget almost gone!</div>
+          <div class="budget-warning">
+            <span class="warning-icon" [innerHTML]="iconAlert"></span>
+            Budget almost gone!
+          </div>
         }
       </div>
     } @empty {
-      <div class="card empty-state"><div class="icon">🎯</div><p>No budgets for this month</p></div>
+      <div class="card empty-state"><p>No budgets for this month</p></div>
     }
   </div>
 </div>
@@ -63,7 +64,7 @@
         <select [(ngModel)]="formCategoryId">
           <option [value]="0" disabled>Choose category</option>
           @for (c of expenseCategories; track c.id) {
-            <option [value]="c.id">{{ c.icon }} {{ c.name }}</option>
+            <option [value]="c.id">{{ c.name }}</option>
           }
         </select>
       </div>
