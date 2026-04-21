@@ -26,11 +26,13 @@ export class Login {
       this.error.set('Fill all the fields');
       return;
     }
-    const ok = this.auth.login({ username: this.username, password: this.password });
-    if (ok) {
-      this.router.navigate(['/dashboard']);
-    } else {
-      this.error.set('Invalid login or password. Try: demo');
-    }
+    this.error.set('');
+    this.auth.login({ username: this.username, password: this.password }).subscribe(ok => {
+      if (ok) {
+        this.router.navigate(['/dashboard']);
+      } else {
+        this.error.set('Invalid login or password');
+      }
+    });
   }
 }

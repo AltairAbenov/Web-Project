@@ -16,7 +16,7 @@ export interface RegisterRequest {
   username: string;
   email: string;
   password: string;
-  password_confirm: string;
+  confirm_password: string;
   first_name: string;
   last_name: string;
 }

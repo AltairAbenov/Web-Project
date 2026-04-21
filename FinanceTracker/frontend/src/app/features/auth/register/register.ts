@@ -27,29 +27,31 @@ export class Register {
 
   submit(): void {
     if (!this.username || !this.email || !this.password || !this.passwordConfirm) {
-      this.error.set('Fill in all required fields ');
+      this.error.set('Fill in all required fields');
       return;
     }
     if (this.password !== this.passwordConfirm) {
       this.error.set('Passwords are not the same');
       return;
     }
-    if (this.password.length < 4) {
-      this.error.set('Password should be at least 4 symbols long');
+    if (this.password.length < 6) {
+      this.error.set('Password should be at least 6 symbols long');
       return;
     }
-    const ok = this.auth.register({
+    this.error.set('');
+    this.auth.register({
       username: this.username,
       email: this.email,
       password: this.password,
-      password_confirm: this.passwordConfirm,
+      confirm_password: this.passwordConfirm,
       first_name: this.firstName || this.username,
       last_name: this.lastName || '',
+    }).subscribe(ok => {
+      if (ok) {
+        this.router.navigate(['/dashboard']);
+      } else {
+        this.error.set('User with the same username or email already exists');
+      }
     });
-    if (ok) {
-      this.router.navigate(['/dashboard']);
-    } else {
-      this.error.set('User with the same username or email already exists');
-    }
   }
 }
