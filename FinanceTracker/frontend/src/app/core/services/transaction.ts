@@ -1,39 +1,13 @@
 import { Injectable, signal, computed } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Transaction } from '../models/transaction';
 import { CategoryService } from './category';
-
-function generateMockTransactions(): Transaction[] {
-  const now = new Date();
-  const transactions: Transaction[] = [];
-  const incomeDescs = ['Month salary', 'Project expense', 'Dividends', 'Gift'];
-  const expenseDescs = ['Supermarket', 'Taxi', 'Movie', 'Electricity', 'Pharmacy', 'T-shirt', 'Courses', 'Restaurant'];
-
-  for (let i = 0; i < 30; i++) {
-    const d = new Date(now);
-    d.setDate(d.getDate() - Math.floor(Math.random() * 90));
-    const isIncome = Math.random() > 0.65;
-    transactions.push({
-      id: i + 1,
-      amount: isIncome
-        ? Math.round((Math.random() * 400000 + 100000))
-        : Math.round((Math.random() * 50000 + 1000)),
-      type: isIncome ? 'income' : 'expense',
-      category_id: isIncome
-        ? Math.ceil(Math.random() * 4)
-        : Math.ceil(Math.random() * 8) + 4,
-      description: isIncome
-        ? incomeDescs[Math.floor(Math.random() * incomeDescs.length)]
-        : expenseDescs[Math.floor(Math.random() * expenseDescs.length)],
-      date: d.toISOString().split('T')[0],
-      created_at: d.toISOString()
-    });
-  }
-  return transactions.sort((a, b) => b.date.localeCompare(a.date));
-}
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class TransactionService {
-  private _transactions = signal<Transaction[]>(this.load());
+  private _transactions = signal<Transaction[]>([]);
+  private apiUrl = environment.apiUrl + '/transactions';
 
   transactions = this._transactions.asReadonly();
 
@@ -47,44 +21,67 @@ export class TransactionService {
 
   balance = computed(() => this.totalIncome() - this.totalExpense());
 
-  constructor(private catService: CategoryService) {}
+  constructor(private http: HttpClient, private catService: CategoryService) {
+    this.loadAll();
+  }
+
+  loadAll(): void {
+    this.http.get<any[]>(`${this.apiUrl}/`).subscribe({
+      next: txns => this._transactions.set(txns.map(t => this.mapFromApi(t))),
+      error: () => {}
+    });
+  }
 
   getAll(): Transaction[] {
     return this._transactions();
   }
 
   getWithCategory(): (Transaction & { category_name: string; category_icon: string; category_color: string })[] {
-  return this._transactions().map(t => {
-    const cat = this.catService.getById(t.category_id);
-    const anyT = t as any;
-    return {
-      ...t,
-      category_name: anyT.category_name || cat?.name || 'No category',
-      category_icon: anyT.category_icon || cat?.icon || '❓',
-      category_color: anyT.category_color || cat?.color || '#94a3b8',
+    return this._transactions().map(t => {
+      const cat = this.catService.getById(t.category_id);
+      return {
+        ...t,
+        category_name: cat?.name || 'No category',
+        category_icon: cat?.icon || 'helpCircle',
+        category_color: cat?.color || '#94a3b8',
       };
     });
   }
 
-  add(t: Omit<Transaction, 'id' | 'created_at'>): Transaction {
-    const all = this._transactions();
-    const newT: Transaction = { ...t, id: Math.max(0, ...all.map(x => x.id)) + 1, created_at: new Date().toISOString() };
-    const updated = [newT, ...all].sort((a, b) => b.date.localeCompare(a.date));
-    this._transactions.set(updated);
-    this.save(updated);
-    return newT;
+  add(t: Omit<Transaction, 'id' | 'created_at'>): void {
+    const body = {
+      amount: t.amount,
+      type: t.type,
+      category: t.category_id,
+      description: t.description,
+      date: t.date,
+    };
+    this.http.post<any>(`${this.apiUrl}/`, body).subscribe(newT => {
+      this._transactions.update(all =>
+        [this.mapFromApi(newT), ...all].sort((a, b) => b.date.localeCompare(a.date))
+      );
+    });
   }
 
   update(t: Transaction): void {
-    const updated = this._transactions().map(x => x.id === t.id ? { ...t } : x);
-    this._transactions.set(updated);
-    this.save(updated);
+    const body = {
+      amount: t.amount,
+      type: t.type,
+      category: t.category_id,
+      description: t.description,
+      date: t.date,
+    };
+    this.http.put<any>(`${this.apiUrl}/${t.id}/`, body).subscribe(updated => {
+      this._transactions.update(all =>
+        all.map(x => x.id === updated.id ? this.mapFromApi(updated) : x)
+      );
+    });
   }
 
   delete(id: number): void {
-    const updated = this._transactions().filter(x => x.id !== id);
-    this._transactions.set(updated);
-    this.save(updated);
+    this.http.delete(`${this.apiUrl}/${id}/`).subscribe(() => {
+      this._transactions.update(all => all.filter(x => x.id !== id));
+    });
   }
 
   getByMonth(year: number, month: number): Transaction[] {
@@ -100,18 +97,20 @@ export class TransactionService {
     txns.forEach(t => map.set(t.category_id, (map.get(t.category_id) ?? 0) + t.amount));
     return Array.from(map.entries()).map(([catId, total]) => {
       const cat = this.catService.getById(catId);
-      return { category_id: catId, name: cat?.name ?? '?', icon: cat?.icon ?? '?', color: cat?.color ?? '#999', total };
+      return { category_id: catId, name: cat?.name ?? '?', icon: cat?.icon ?? 'helpCircle', color: cat?.color ?? '#999', total };
     }).sort((a, b) => b.total - a.total);
   }
 
-  private load(): Transaction[] {
-    try {
-      const s = sessionStorage.getItem('ft_transactions');
-      return s ? JSON.parse(s) : generateMockTransactions();
-    } catch { return generateMockTransactions(); }
-  }
-
-  private save(txns: Transaction[]): void {
-    try { sessionStorage.setItem('ft_transactions', JSON.stringify(txns)); } catch {}
+  private mapFromApi(t: any): Transaction {
+    return {
+      id: t.id,
+      amount: Number(t.amount),
+      type: t.type,
+      category_id: t.category,
+      category_name: t.category_name || undefined,
+      description: t.description || '',
+      date: t.date,
+      created_at: t.created_at,
+    };
   }
 }
