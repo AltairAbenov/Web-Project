@@ -31,7 +31,7 @@
           <tr>
             <td>
               <div class="cat-cell">
-                <span class="cat-icon" [style.background]="t.category_color + '22'" [style.color]="t.category_color" [innerHTML]="getIconSvg(t.category_icon)"></span>
+                <span class="cat-icon" [style.background]="t.category_color + '22'" [style.color]="t.category_color" [innerHTML]="getIconSvg(t.category_icon) | safeHtml"></span>
                 <span>{{ t.category_name }}</span>
               </div>
             </td>
@@ -44,8 +44,8 @@
             </td>
             <td>
               <div class="actions">
-                <button class="btn btn-secondary btn-sm icon-action-btn" [innerHTML]="iconEdit" (click)="openEdit(t)"></button>
-                <button class="btn btn-danger btn-sm icon-action-btn" [innerHTML]="iconTrash" (click)="deleteTxn(t.id)"></button>
+                <button class="btn btn-secondary btn-sm icon-action-btn" [innerHTML]="iconEdit | safeHtml" (click)="openEdit(t)"></button>
+                <button class="btn btn-danger btn-sm icon-action-btn" [innerHTML]="iconTrash | safeHtml" (click)="deleteTxn(t.id)"></button>
               </div>
             </td>
           </tr>

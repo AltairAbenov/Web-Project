@@ -3,10 +3,11 @@ import { FormsModule } from '@angular/forms';
 import { BudgetService } from '../../../core/services/budget';
 import { CategoryService } from '../../../core/services/category';
 import { ICONS } from '../../../core/icons/icons';
+import { SafeHtmlPipe } from '../../../core/pipes/safe-html.pipe';
 
 @Component({
   selector: 'app-budget-list',
-  imports: [FormsModule],
+  imports: [FormsModule, SafeHtmlPipe],
   templateUrl: './budget-list.html',
   styleUrl: './budget-list.css',
 })

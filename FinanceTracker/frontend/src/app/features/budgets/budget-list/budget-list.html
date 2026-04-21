@@ -29,7 +29,7 @@
             <h3>{{ b.category_name }}</h3>
             <span class="budget-pct" [class]="statusClass(b)">{{ percent(b) }}%</span>
           </div>
-          <button class="btn btn-danger btn-sm icon-action-btn" [innerHTML]="iconTrash" (click)="deleteBudget(b.id)"></button>
+          <button class="btn btn-danger btn-sm icon-action-btn" [innerHTML]="iconTrash | safeHtml" (click)="deleteBudget(b.id)"></button>
         </div>
         <div class="budget-amounts">
           <span>{{ formatAmount(b.spent) }}</span>
@@ -44,7 +44,7 @@
         </div>
         @if (percent(b) > 90) {
           <div class="budget-warning">
-            <span class="warning-icon" [innerHTML]="iconAlert"></span>
+            <span class="warning-icon" [innerHTML]="iconAlert | safeHtml"></span>
             Budget almost gone!
           </div>
         }

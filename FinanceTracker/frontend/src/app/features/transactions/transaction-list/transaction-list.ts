@@ -4,13 +4,14 @@ import { TransactionService } from '../../../core/services/transaction';
 import { CategoryService } from '../../../core/services/category';
 import { Transaction } from '../../../core/models/transaction';
 import { getIcon, ICONS } from '../../../core/icons/icons';
+import { SafeHtmlPipe } from '../../../core/pipes/safe-html.pipe';
 
 type SortField = 'date' | 'amount';
 type SortDir = 'asc' | 'desc';
 
 @Component({
   selector: 'app-transaction-list',
-  imports: [FormsModule],
+  imports: [FormsModule, SafeHtmlPipe],
   templateUrl: './transaction-list.html',
   styleUrl: './transaction-list.css',
 })

@@ -6,10 +6,11 @@ import { TransactionService } from '../../../core/services/transaction';
 import { BudgetService } from '../../../core/services/budget';
 import { AnalyticsService, MonthlyData } from '../../../core/services/analytics';
 import { getIcon, ICONS } from '../../../core/icons/icons';
+import { SafeHtmlPipe } from '../../../core/pipes/safe-html.pipe';
 
 @Component({
   selector: 'app-dashboard-page',
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, RouterLink, FormsModule, SafeHtmlPipe],
   templateUrl: './dashboard-page.html',
   styleUrl: './dashboard-page.css',
 })
@@ -17,11 +18,9 @@ export class DashboardPage implements AfterViewInit {
   @ViewChild('barChart') barChartEl!: ElementRef<HTMLCanvasElement>;
   @ViewChild('pieChart') pieChartEl!: ElementRef<HTMLCanvasElement>;
 
-  // Period selector
   selectedPeriod = signal(6);
   periodOptions = [3, 6, 9, 12];
 
-  // Icons for summary cards
   iconTrendUp = ICONS.trendUp;
   iconTrendDown = ICONS.trendDown;
   iconCoins = ICONS.coins;
@@ -31,10 +30,8 @@ export class DashboardPage implements AfterViewInit {
     public budgetService: BudgetService,
     public analytics: AnalyticsService,
   ) {
-    // Redraw charts when period changes
     effect(() => {
       this.selectedPeriod();
-      // Need a small delay so canvas is available
       setTimeout(() => {
         this.drawBarChart();
         this.drawPieChart();
@@ -93,7 +90,6 @@ export class DashboardPage implements AfterViewInit {
 
     ctx.clearRect(0, 0, w, h);
 
-    // Grid lines
     ctx.strokeStyle = '#334155';
     ctx.lineWidth = 0.5;
     for (let i = 0; i <= 4; i++) {
@@ -160,13 +156,11 @@ export class DashboardPage implements AfterViewInit {
       angle += slice;
     });
 
-    // Donut hole
     ctx.beginPath();
     ctx.arc(cx, cy, r * 0.55, 0, Math.PI * 2);
     ctx.fillStyle = '#1e293b';
     ctx.fill();
 
-    // Legend (text only, no emoji)
     const legendX = w * 0.65;
     let legendY = 20;
     ctx.font = '11px Inter, sans-serif';

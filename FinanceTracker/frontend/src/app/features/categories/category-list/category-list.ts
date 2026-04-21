@@ -2,10 +2,11 @@ import { Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CategoryService } from '../../../core/services/category';
 import { getIcon, ICONS, ICON_PICKER_KEYS } from '../../../core/icons/icons';
+import { SafeHtmlPipe } from '../../../core/pipes/safe-html.pipe';
 
 @Component({
   selector: 'app-category-list',
-  imports: [FormsModule],
+  imports: [FormsModule, SafeHtmlPipe],
   templateUrl: './category-list.html',
   styleUrl: './category-list.css',
 })

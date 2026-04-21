@@ -1,6 +1,7 @@
 import { Component, signal, effect } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { ICONS } from '../../icons/icons';
+import { SafeHtmlPipe } from '../../pipes/safe-html.pipe';
 
 interface NavItem {
   label: string;
@@ -10,7 +11,7 @@ interface NavItem {
 
 @Component({
   selector: 'app-sidebar',
-  imports: [RouterLink, RouterLinkActive],
+  imports: [RouterLink, RouterLinkActive, SafeHtmlPipe],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.css',
 })
