@@ -16,7 +16,7 @@ class TransactionSerializer(serializers.ModelSerializer):
 
     def validate_amount(self, value):
         if value <= 0:
-            raise serializers.ValidationError("Сумма должна быть больше 0")
+            raise serializers.ValidationError("The amount should be more 0")
         return value
 
     def create(self, validated_data):

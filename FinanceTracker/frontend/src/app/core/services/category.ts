@@ -1,26 +1,40 @@
 import { Injectable, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Category } from '../models/category';
+import { environment } from '../../../environments/environment';
 
-const DEFAULT_CATEGORIES: Category[] = [
-  { id: 1, name: 'Salary', type: 'income', icon: 'salary', color: '#22c55e' },
-  { id: 2, name: 'Freelance', type: 'income', icon: 'freelance', color: '#06b6d4' },
-  { id: 3, name: 'Investments', type: 'income', icon: 'investments', color: '#8b5cf6' },
-  { id: 4, name: 'Gifts', type: 'income', icon: 'gifts', color: '#f59e0b' },
-  { id: 5, name: 'Products', type: 'expense', icon: 'products', color: '#ef4444' },
-  { id: 6, name: 'Transport', type: 'expense', icon: 'transport', color: '#f97316' },
-  { id: 7, name: 'Entertainment', type: 'expense', icon: 'entertainment', color: '#ec4899' },
-  { id: 8, name: 'Utility bills', type: 'expense', icon: 'utilities', color: '#64748b' },
-  { id: 9, name: 'Health', type: 'expense', icon: 'health', color: '#14b8a6' },
-  { id: 10, name: 'Clothes', type: 'expense', icon: 'clothes', color: '#a855f7' },
-  { id: 11, name: 'Education', type: 'expense', icon: 'education', color: '#3b82f6' },
-  { id: 12, name: 'Restaurants', type: 'expense', icon: 'restaurants', color: '#e11d48' },
-];
+const FALLBACK_META: Record<string, { type: 'income' | 'expense'; color: string }> = {
+  'Salary':        { type: 'income',  color: '#22c55e' },
+  'Freelance':     { type: 'income',  color: '#06b6d4' },
+  'Investments':   { type: 'income',  color: '#8b5cf6' },
+  'Gifts':         { type: 'income',  color: '#f59e0b' },
+  'Products':      { type: 'expense', color: '#ef4444' },
+  'Transport':     { type: 'expense', color: '#f97316' },
+  'Entertainment': { type: 'expense', color: '#ec4899' },
+  'Utility bills': { type: 'expense', color: '#64748b' },
+  'Health':        { type: 'expense', color: '#14b8a6' },
+  'Clothes':       { type: 'expense', color: '#a855f7' },
+  'Education':     { type: 'expense', color: '#3b82f6' },
+  'Restaurants':   { type: 'expense', color: '#e11d48' },
+};
 
 @Injectable({ providedIn: 'root' })
 export class CategoryService {
-  private _categories = signal<Category[]>(this.load());
+  private _categories = signal<Category[]>([]);
+  private apiUrl = environment.apiUrl + '/categories';
 
   categories = this._categories.asReadonly();
+
+  constructor(private http: HttpClient) {
+    this.loadAll();
+  }
+
+  loadAll(): void {
+    this.http.get<any[]>(`${this.apiUrl}/`).subscribe({
+      next: cats => this._categories.set(cats.map(c => this.mapFromApi(c))),
+      error: () => {}
+    });
+  }
 
   getAll(): Category[] {
     return this._categories();
@@ -34,29 +48,32 @@ export class CategoryService {
     return this._categories().filter(c => c.type === type);
   }
 
-  add(cat: Omit<Category, 'id'>): Category {
-    const all = this._categories();
-    const newCat: Category = { ...cat, id: Math.max(0, ...all.map(c => c.id)) + 1 };
-    const updated = [...all, newCat];
-    this._categories.set(updated);
-    this.save(updated);
-    return newCat;
+  add(cat: Omit<Category, 'id'>): void {
+    const body = {
+      name: cat.name,
+      icon: cat.icon,
+      type: cat.type,
+      color: cat.color,
+    };
+    this.http.post<any>(`${this.apiUrl}/`, body).subscribe(newCat => {
+      this._categories.update(all => [...all, this.mapFromApi(newCat)]);
+    });
   }
 
   delete(id: number): void {
-    const updated = this._categories().filter(c => c.id !== id);
-    this._categories.set(updated);
-    this.save(updated);
+    this.http.delete(`${this.apiUrl}/${id}/`).subscribe(() => {
+      this._categories.update(all => all.filter(c => c.id !== id));
+    });
   }
 
-  private load(): Category[] {
-    try {
-      const s = sessionStorage.getItem('ft_categories');
-      return s ? JSON.parse(s) : [...DEFAULT_CATEGORIES];
-    } catch { return [...DEFAULT_CATEGORIES]; }
-  }
-
-  private save(cats: Category[]): void {
-    try { sessionStorage.setItem('ft_categories', JSON.stringify(cats)); } catch {}
+  private mapFromApi(c: any): Category {
+    const fallback = FALLBACK_META[c.name] || { type: 'expense', color: '#6366f1' };
+    return {
+      id: c.id,
+      name: c.name,
+      icon: c.icon || 'box',
+      type: c.type || fallback.type,
+      color: c.color || fallback.color,
+    };
   }
 }
