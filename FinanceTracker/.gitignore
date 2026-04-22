@@ -45,6 +45,11 @@ Thumbs.db
 
 #Python venv
 venv/
+algovenv/
 __pycache__/
 *.pyc
 db.sqlite3
+
+#Angular cache
+.angular/
+FinanceTracker/frontend/.angular/
