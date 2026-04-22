@@ -67,7 +67,9 @@
   <div class="modal-overlay" (click)="closeForm()">
     <div class="modal" (click)="$event.stopPropagation()">
       <h2>{{ editingTxn() ? 'Edit' : 'New transaction' }}</h2>
-
+      @if (formError()) {
+        <div class="error-msg">{{ formError() }}</div>
+      }
       <div class="form-group">
         <label>Type</label>
         <div class="type-toggle">
