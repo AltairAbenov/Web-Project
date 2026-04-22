@@ -41,7 +41,6 @@ export class AuthService {
       }
     ).pipe(
       tap(() => {
-        // After register, auto-login to get tokens
         this.http.post<{ access: string; refresh: string }>(
           `${this.apiUrl}/login/`, { username: req.username, password: req.password }
         ).subscribe(tokens => {

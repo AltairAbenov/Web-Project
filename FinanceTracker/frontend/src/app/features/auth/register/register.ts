@@ -34,7 +34,7 @@ export class Register {
       this.error.set('Passwords are not the same');
       return;
     }
-    if (this.password.length < 4) {
+    if (this.password.length < 6) {
       this.error.set('Password should be at least 4 symbols long');
       return;
     }
@@ -50,7 +50,7 @@ export class Register {
       if (ok) {
         this.router.navigate(['/dashboard']);
       } else {
-        this.error.set('User with the same username or email already exists');
+        this.error.set('Registration failed. Username may already be taken, or password must be at least 6 characters.');
       }
     });
   }
