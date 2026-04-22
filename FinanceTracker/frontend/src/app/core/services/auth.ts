@@ -50,7 +50,10 @@ export class AuthService {
         });
       }),
       map(() => true),
-      catchError(() => of(false))
+      catchError(err => {
+        console.error('Register error:', err.error);
+        return of(false);
+      })
     );
   }
 

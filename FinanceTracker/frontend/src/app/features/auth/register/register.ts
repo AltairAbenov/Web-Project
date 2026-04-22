@@ -34,8 +34,8 @@ export class Register {
       this.error.set('Passwords are not the same');
       return;
     }
-    if (this.password.length < 6) {
-      this.error.set('Password should be at least 6 symbols long');
+    if (this.password.length < 4) {
+      this.error.set('Password should be at least 4 symbols long');
       return;
     }
     this.error.set('');
