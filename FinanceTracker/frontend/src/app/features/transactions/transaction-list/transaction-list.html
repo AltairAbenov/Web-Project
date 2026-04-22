@@ -12,6 +12,11 @@
       <button class="tab" [class.active]="filterType() === 'expense'" (click)="setFilter('expense')">Expenses</button>
     </div>
     <input type="text" placeholder="Searching by description or category..." [ngModel]="searchQuery()" (ngModelChange)="setSearch($event)" class="search-input" />
+    <div class="date-range">
+      <input type="date" [ngModel]="dateFrom()" (ngModelChange)="setDateFrom($event)" class="date-input" />
+      <span class="date-separator">—</span>
+      <input type="date" [ngModel]="dateTo()" (ngModelChange)="setDateTo($event)" class="date-input" />
+    </div>
   </div>
 
 

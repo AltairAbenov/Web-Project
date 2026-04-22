@@ -1,4 +1,4 @@
-.transactions-page { max-width: 1100px; }
+.transactions-page { max-width: 1100px; margin: 0 auto; }
 
 .filters {
   display: flex;
@@ -97,4 +97,21 @@
   align-items: center;
   justify-content: center;
   padding: 6px 8px;
+}
+
+.date-range {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.date-input {
+  width: 140px;
+  padding: 7px 10px;
+  font-size: 12px;
+}
+
+.date-separator {
+  color: var(--text-muted);
+  font-size: 14px;
 }

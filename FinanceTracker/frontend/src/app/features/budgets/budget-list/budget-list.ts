@@ -15,6 +15,7 @@ export class BudgetList {
   showForm = signal(false);
   formCategoryId = 0;
   formAmount = '';
+  formError = signal('');
 
   iconTrash = ICONS.trash;
   iconAlert = ICONS.alertTriangle;
@@ -52,19 +53,27 @@ export class BudgetList {
   }
 
   save(): void {
-    const amount = parseFloat(this.formAmount);
-    if (!amount || !this.formCategoryId) return;
-    const now = new Date();
-    this.budgetService.add({
-      category_id: Number(this.formCategoryId),
-      amount,
-      month: now.getMonth(),
-      year: now.getFullYear(),
-    });
-    this.showForm.set(false);
+  const amount = parseFloat(this.formAmount);
+  if (!this.formCategoryId || this.formCategoryId == 0) {
+    this.formError.set('Choose a category');
+    return;
   }
+  if (!amount || amount <= 0) {
+    this.formError.set('Enter a valid amount');
+    return;
+  }
+  this.formError.set('');
+  const now = new Date();
+  this.budgetService.add({
+    category_id: Number(this.formCategoryId),
+    amount,
+    month: now.getMonth(),
+    year: now.getFullYear(),
+  });
+  this.showForm.set(false);
+}
 
-  deleteBudget(id: number): void {
-    this.budgetService.delete(id);
-  }
+deleteBudget(id: number): void {
+  this.budgetService.delete(id);
+}
 }

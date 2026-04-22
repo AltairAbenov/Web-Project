@@ -269,3 +269,11 @@ body.sidebar-collapsed .main-content {
   margin-left: 72px;
 }
 
+.error-msg {
+  background: var(--red-light);
+  color: var(--red);
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  margin-bottom: 16px;
+}

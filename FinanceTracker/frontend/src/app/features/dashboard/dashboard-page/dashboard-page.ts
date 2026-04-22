@@ -20,6 +20,8 @@ export class DashboardPage implements AfterViewInit {
 
   selectedPeriod = signal(6);
   periodOptions = [3, 6, 9, 12];
+  piePeriod = signal(1);
+  piePeriodOptions = [1, 3, 6, 12];
 
   iconTrendUp = ICONS.trendUp;
   iconTrendDown = ICONS.trendDown;
@@ -32,6 +34,7 @@ export class DashboardPage implements AfterViewInit {
   ) {
     effect(() => {
       this.selectedPeriod();
+      this.piePeriod();
       setTimeout(() => {
         this.drawBarChart();
         this.drawPieChart();
@@ -43,9 +46,34 @@ export class DashboardPage implements AfterViewInit {
   budgets = computed(() => this.budgetService.getCurrentMonth());
   monthlyData = computed(() => this.analytics.getLastNMonths(this.selectedPeriod()));
   expenseByCategory = computed(() => {
-    const now = new Date();
-    return this.txnService.getExpenseByCategory(now.getFullYear(), now.getMonth());
-  });
+  const n = this.piePeriod();
+  const now = new Date();
+  const allExpenses: { category_id: number; name: string; icon: string; color: string; total: number }[] = [];
+  const map = new Map<number, { name: string; icon: string; color: string; total: number }>();
+
+  for (let i = n - 1; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const items = this.txnService.getExpenseByCategory(d.getFullYear(), d.getMonth());
+    items.forEach(item => {
+      const existing = map.get(item.category_id);
+      if (existing) {
+        existing.total += item.total;
+      } else {
+        map.set(item.category_id, { name: item.name, icon: item.icon, color: item.color, total: item.total });
+      }
+    });
+  }
+
+  
+
+  return Array.from(map.entries())
+    .map(([category_id, data]) => ({ category_id, ...data }))
+    .sort((a, b) => b.total - a.total);
+});
+
+setPiePeriod(n: number): void {
+  this.piePeriod.set(n);
+}
 
   getIconSvg(key: string): string {
     return getIcon(key);

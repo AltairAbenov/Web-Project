@@ -59,6 +59,9 @@
   <div class="modal-overlay" (click)="showForm.set(false)">
     <div class="modal" (click)="$event.stopPropagation()">
       <h2>New Budget</h2>
+      @if (formError()) {
+        <div class="error-msg">{{ formError() }}</div>
+      }
       <div class="form-group">
         <label>Expense category</label>
         <select [(ngModel)]="formCategoryId">

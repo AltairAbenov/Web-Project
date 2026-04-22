@@ -47,8 +47,15 @@
       <canvas #barChart class="chart-canvas"></canvas>
     </div>
     <div class="card chart-card">
-      <h3>Categorized expenses</h3>
-      <p class="chart-description">Breakdown of your spending by category for the current month.</p>
+  <div class="chart-header">
+    <h3>Categorized expenses</h3>
+    <div class="period-selector">
+      @for (p of piePeriodOptions; track p) {
+        <button class="period-btn" [class.active]="piePeriod() === p" (click)="setPiePeriod(p)">{{ p }}m</button>
+      }
+    </div>
+  </div>
+  <p class="chart-description">Breakdown of your spending by category for the selected period.</p>
       <canvas #pieChart class="chart-canvas"></canvas>
     </div>
   </div>

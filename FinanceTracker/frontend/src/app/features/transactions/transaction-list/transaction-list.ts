@@ -9,6 +9,7 @@ import { SafeHtmlPipe } from '../../../core/pipes/safe-html.pipe';
 type SortField = 'date' | 'amount';
 type SortDir = 'asc' | 'desc';
 
+
 @Component({
   selector: 'app-transaction-list',
   imports: [FormsModule, SafeHtmlPipe],
@@ -20,19 +21,19 @@ export class TransactionList {
   searchQuery = signal('');
   showForm = signal(false);
   editingTxn = signal<Transaction | null>(null);
+  formError = signal('');
 
-  // Sorting
   sortField = signal<SortField>('date');
   sortDir = signal<SortDir>('desc');
+  dateFrom = signal('');
+  dateTo = signal('');
 
-  // Form fields
   formAmount = '';
   formType: 'income' | 'expense' = 'expense';
   formCategoryId = 0;
   formDescription = '';
   formDate = new Date().toISOString().split('T')[0];
 
-  // Icons
   iconEdit = ICONS.edit;
   iconTrash = ICONS.trash;
   iconArrowUpDown = ICONS.arrowUpDown;
@@ -55,7 +56,11 @@ export class TransactionList {
       t.description.toLowerCase().includes(q) || t.category_name.toLowerCase().includes(q)
     );
 
-    // Sort
+    const from = this.dateFrom();
+    const to = this.dateTo();
+    if (from) txns = txns.filter(t => t.date >= from);
+    if (to) txns = txns.filter(t => t.date <= to);
+
     txns = [...txns].sort((a, b) => {
       let cmp = 0;
       if (sf === 'amount') {
@@ -98,6 +103,7 @@ export class TransactionList {
     this.formDescription = '';
     this.formDate = new Date().toISOString().split('T')[0];
     this.showForm.set(true);
+    this.formError.set('');
   }
 
   openEdit(t: Transaction): void {
@@ -108,6 +114,7 @@ export class TransactionList {
     this.formDescription = t.description;
     this.formDate = t.date;
     this.showForm.set(true);
+    this.formError.set('');
   }
 
   closeForm(): void { this.showForm.set(false); }
@@ -118,7 +125,25 @@ export class TransactionList {
 
   saveTransaction(): void {
     const amount = parseFloat(this.formAmount);
-    if (!amount || amount <= 0 || !this.formCategoryId || !this.formDescription) return;
+
+    if (!amount || amount <= 0) {
+      this.formError.set('Enter a valid amount');
+    return;
+    }
+    if (!this.formCategoryId || this.formCategoryId == 0) {
+      this.formError.set('Choose a category');
+      return;
+    }
+    if (!this.formDescription.trim()) {
+      this.formError.set('Enter a description');
+      return;
+    }
+    if (!this.formDate) {
+      this.formError.set('Choose a date');
+      return;
+    }
+
+    this.formError.set('');
 
     const editing = this.editingTxn();
     if (editing) {
@@ -141,8 +166,9 @@ export class TransactionList {
     }
     this.showForm.set(false);
   }
-
+  setDateFrom(d: string) { this.dateFrom.set(d); }
+  setDateTo(d: string) { this.dateTo.set(d); }
   deleteTxn(id: number): void {
-    this.txnService.delete(id);
-  }
+  this.txnService.delete(id);
+}
 }

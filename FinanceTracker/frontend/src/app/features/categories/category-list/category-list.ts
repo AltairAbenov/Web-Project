@@ -16,11 +16,11 @@ export class CategoryList {
   formType: 'income' | 'expense' = 'expense';
   formIcon = 'box';
   formColor = '#6366f1';
+  formError = signal('');
 
   iconKeys = ICON_PICKER_KEYS;
   colors = ['#ef4444', '#f97316', '#f59e0b', '#22c55e', '#06b6d4', '#3b82f6', '#6366f1', '#8b5cf6', '#a855f7', '#ec4899', '#14b8a6', '#64748b'];
 
-  // Section header icons
   iconIncomeHeader = ICONS.incomeHeader;
   iconExpenseHeader = ICONS.expenseHeader;
 
@@ -44,18 +44,23 @@ export class CategoryList {
     this.formIcon = 'box';
     this.formColor = '#6366f1';
     this.showForm.set(true);
+    this.formError.set('');
   }
 
   save(): void {
-    if (!this.formName.trim()) return;
-    this.catService.add({
-      name: this.formName.trim(),
-      type: this.formType,
-      icon: this.formIcon,
-      color: this.formColor,
-    });
-    this.showForm.set(false);
+  if (!this.formName.trim()) {
+    this.formError.set('Enter a category name');
+    return;
   }
+  this.formError.set('');
+  this.catService.add({
+    name: this.formName.trim(),
+    type: this.formType,
+    icon: this.formIcon,
+    color: this.formColor,
+  });
+  this.showForm.set(false);
+}
 
   deleteCategory(id: number): void {
     this.catService.delete(id);

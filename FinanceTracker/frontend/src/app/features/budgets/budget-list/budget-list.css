@@ -1,4 +1,4 @@
-.budgets-page { max-width: 1000px; }
+.budgets-page { max-width: 1000px; margin: 0 auto; }
 
 .budget-summary {
   display: flex;
