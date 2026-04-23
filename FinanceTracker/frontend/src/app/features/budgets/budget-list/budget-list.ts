@@ -1,4 +1,4 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, signal, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BudgetService } from '../../../core/services/budget';
 import { CategoryService } from '../../../core/services/category';
@@ -11,7 +11,7 @@ import { SafeHtmlPipe } from '../../../core/pipes/safe-html.pipe';
   templateUrl: './budget-list.html',
   styleUrl: './budget-list.css',
 })
-export class BudgetList {
+export class BudgetList implements OnInit {
   showForm = signal(false);
   formCategoryId = 0;
   formAmount = '';
@@ -37,6 +37,10 @@ export class BudgetList {
   percent(b: any): number {
     if (!b.amount) return 0;
     return Math.min(100, Math.round((b.spent / b.amount) * 100));
+  }
+
+  ngOnInit(): void {
+    this.budgetService.loadAll();
   }
 
   statusClass(b: any): string {

@@ -1,4 +1,4 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, signal, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TransactionService } from '../../../core/services/transaction';
 import { CategoryService } from '../../../core/services/category';
@@ -16,7 +16,7 @@ type SortDir = 'asc' | 'desc';
   templateUrl: './transaction-list.html',
   styleUrl: './transaction-list.css',
 })
-export class TransactionList {
+export class TransactionList implements OnInit {
   filterType = signal<'all' | 'income' | 'expense'>('all');
   searchQuery = signal('');
   showForm = signal(false);
@@ -42,6 +42,11 @@ export class TransactionList {
 
   getIconSvg(key: string): string {
     return getIcon(key, 16);
+  }
+
+  ngOnInit(): void {
+    this.txnService.loadAll();
+    this.catService.loadAll();
   }
 
   filteredTransactions = computed(() => {

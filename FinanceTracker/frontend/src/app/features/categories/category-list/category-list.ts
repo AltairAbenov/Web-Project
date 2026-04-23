@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CategoryService } from '../../../core/services/category';
 import { getIcon, ICONS, ICON_PICKER_KEYS } from '../../../core/icons/icons';
@@ -10,7 +10,7 @@ import { SafeHtmlPipe } from '../../../core/pipes/safe-html.pipe';
   templateUrl: './category-list.html',
   styleUrl: './category-list.css',
 })
-export class CategoryList {
+export class CategoryList implements OnInit {
   showForm = signal(false);
   formName = '';
   formType: 'income' | 'expense' = 'expense';
@@ -33,6 +33,10 @@ export class CategoryList {
   getIconSized(key: string, size: number): string {
     const icon = getIcon(key, size);
     return icon.replace(/width="\d+"/, `width="${size}"`).replace(/height="\d+"/, `height="${size}"`);
+  }
+
+  ngOnInit(): void {
+    this.catService.loadAll();
   }
 
   get incomeCategories() { return this.catService.getByType('income'); }

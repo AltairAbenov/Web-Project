@@ -1,4 +1,4 @@
-import { Component, computed, signal, ElementRef, ViewChild, AfterViewInit, effect } from '@angular/core';
+import { Component, computed, signal, ElementRef, ViewChild, AfterViewInit, effect, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -14,7 +14,7 @@ import { SafeHtmlPipe } from '../../../core/pipes/safe-html.pipe';
   templateUrl: './dashboard-page.html',
   styleUrl: './dashboard-page.css',
 })
-export class DashboardPage implements AfterViewInit {
+export class DashboardPage implements AfterViewInit, OnInit {
   @ViewChild('barChart') barChartEl!: ElementRef<HTMLCanvasElement>;
   @ViewChild('pieChart') pieChartEl!: ElementRef<HTMLCanvasElement>;
 
@@ -97,6 +97,11 @@ setPiePeriod(n: number): void {
       this.drawBarChart();
       this.drawPieChart();
     }, 100);
+  }
+
+  ngOnInit(): void {
+    this.txnService.loadAll();
+    this.budgetService.loadAll();
   }
 
   drawBarChart(): void {
