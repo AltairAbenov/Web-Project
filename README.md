@@ -6,6 +6,8 @@ A web application for managing personal finances. Users can track income and exp
 
 This project uses **Angular** for the frontend and **Django** for the backend, providing a full-stack solution with secure data storage and fast response.
 
+![FinanceTracker](FinanceTrackerScreen.png)
+
 ---
 
 ## Features
